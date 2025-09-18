@@ -1,5 +1,6 @@
 package com.woon7713.backend.controller;
 
+import com.woon7713.backend.dto.AuthRequest;
 import com.woon7713.backend.dto.AuthResponse;
 import com.woon7713.backend.dto.RegisterRequest;
 import com.woon7713.backend.service.AuthService;
@@ -22,5 +23,12 @@ public class AuthController {
             @Valid @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> authenticate(
+            @Valid @RequestBody AuthRequest request
+    ) {
+        return ResponseEntity.ok(authService.authenticate(request));
     }
 }
