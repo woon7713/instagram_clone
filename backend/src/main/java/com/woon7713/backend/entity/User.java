@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -58,8 +60,12 @@ public class User implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
-    private boolean enabled; // 계정 비/활성화 여부
+
+    private boolean enabled;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Post> posts = new HashSet<>();
 
     @PrePersist
     protected void onCreate() { enabled = true; }
@@ -71,5 +77,4 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() { return enabled; }
-
 }
