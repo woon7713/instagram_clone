@@ -6,7 +6,7 @@ import Avatar from "../components/common/Avatar";
 const Home = () => {
   const navigate = useNavigate();
 
-  const { logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState("home");
   const [showCreatePost, setShowCreatePost] = useState(false);
@@ -63,7 +63,9 @@ const Home = () => {
           </div>
         </header>
 
-        <main>포스트 카드들</main>
+        <main className="pt-16 pb-20">
+          <div className="p-4">포스트카드</div>
+        </main>
 
         <nav className="bg-white border-t border-gray-300 fixed bottom-0 w-full max-w-[470px] z-40">
           <div className="flex items-center justify-around py-3">
@@ -155,7 +157,7 @@ const Home = () => {
               }
             >
               <Avatar
-                user={null}
+                user={user}
                 size="extra-small"
                 showBorder={activeTab === "profile"}
                 borderColor="black"
