@@ -4,6 +4,8 @@ import com.woon7713.backend.dto.PostRequest;
 import com.woon7713.backend.dto.PostResponse;
 import com.woon7713.backend.entity.Post;
 import com.woon7713.backend.entity.User;
+import com.woon7713.backend.exception.ResourceNotFoundException;
+import com.woon7713.backend.exception.UnauthorizedException;
 import com.woon7713.backend.repository.PostRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,34 @@ public class PostService {
         authenticationService.getCurrentUser();
         Page<Post> posts = postRepository.findAllActive(pageable);
         return posts.map(PostResponse::fromEntity);
+    }
+
+    public PostResponse updatePost(Long postId, PostRequest request) {
+        User currentUser = authenticationService.getCurrentUser();
+        Post post = postRepository.findByIdAndNotDeleted(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (!post.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You are not authorized to update this post");
+        }
+
+        post.setContent(request.getContent());
+
+        post = postRepository.save(post);
+        return PostResponse.fromEntity(post);
+    }
+
+    public void deletePost(Long postId) {
+        User currentUser = authenticationService.getCurrentUser();
+        Post post = postRepository.findByIdAndNotDeleted(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
+        if (!post.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You are not authorized to update this post");
+        }
+
+        post.setDeleted(true);
+        postRepository.save(post);
     }
 
 
