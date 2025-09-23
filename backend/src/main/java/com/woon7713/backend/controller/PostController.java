@@ -3,6 +3,7 @@ package com.woon7713.backend.controller;
 import com.woon7713.backend.dto.PostRequest;
 import com.woon7713.backend.dto.PostResponse;
 import com.woon7713.backend.service.PostService;
+import com.woon7713.backend.service.S3Service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,11 +13,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final S3Service s3Service;
+
+    private static final int EXPIRATION_MINUTES = 60;
 
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest request) {
@@ -49,4 +55,9 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/image")
+    public ResponseEntity<Map<String, String>> getPresignedUrl(@RequestParam String url) {
+        String imageUrl = s3Service.generatePresignedUrl(url, EXPIRATION_MINUTES);
+        return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+    }
 }

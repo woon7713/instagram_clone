@@ -13,7 +13,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class S3Controller {
     private final S3Service s3Service;
-
     @PostMapping("/post")
     public ResponseEntity<Map<String, String>> uploadPostImage(@RequestParam("file") MultipartFile file) {
         String url = s3Service.uploadFile(file, "w7/post");
@@ -25,8 +24,4 @@ public class S3Controller {
 //        String presignedUrl = s3Service.generatePresignedUrl(url, 1);
 //        return ResponseEntity.ok(presignedUrl);
 //    }
-
-
-
-
 }
