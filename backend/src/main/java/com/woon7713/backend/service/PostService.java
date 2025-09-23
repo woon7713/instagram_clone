@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class PostService {
 
     private final PostRepository postRepository;
@@ -27,6 +28,7 @@ public class PostService {
 
         Post post = Post.builder()
                 .content(request.getContent())
+                .imageUrl(request.getImageUrl())
                 .user(currentUser)
                 .deleted(false)
                 .build();
@@ -69,6 +71,4 @@ public class PostService {
         post.setDeleted(true);
         postRepository.save(post);
     }
-
-
 }

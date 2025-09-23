@@ -18,6 +18,6 @@ public class PostRequest {
     @Size(max = 2200, message = "Content must not exceed 2200 characters")
     private String content;
 
-    // private String imageUrl;
+    private String imageUrl;
 
 }
