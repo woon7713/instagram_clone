@@ -54,4 +54,9 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<Like> likes = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Comment> Comments = new HashSet<>();
+
 }

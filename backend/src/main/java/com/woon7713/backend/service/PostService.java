@@ -6,6 +6,7 @@ import com.woon7713.backend.entity.Post;
 import com.woon7713.backend.entity.User;
 import com.woon7713.backend.exception.ResourceNotFoundException;
 import com.woon7713.backend.exception.UnauthorizedException;
+import com.woon7713.backend.repository.CommentRepository;
 import com.woon7713.backend.repository.LikeRepository;
 import com.woon7713.backend.repository.PostRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +18,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
     private final AuthenticationService authenticationService;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     public PostResponse createPost(PostRequest request) {
         User currentUser = authenticationService.getCurrentUser();
@@ -47,9 +49,11 @@ public class PostService {
             PostResponse response = PostResponse.fromEntity(post);
             Long likeCount = likeRepository.countByPostId(post.getId());
             boolean isLiked = likeRepository.existsByUserAndPost(currentUser, post);
+            Long commentCount = commentRepository.countByPostId(post.getId());
 
             response.setLikeCount(likeCount);
             response.setLiked(isLiked);
+            response.setCommentCount(commentCount);
 
             return response;
         });
