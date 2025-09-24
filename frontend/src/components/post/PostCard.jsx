@@ -3,15 +3,24 @@ import Avatar from "../common/Avatar";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import useAuthStore from "../../store/authStore";
-import { FiEdit2, FiMoreVertical, FiTrash } from "react-icons/fi";
+import {
+  FiBookmark,
+  FiEdit2,
+  FiHeart,
+  FiMessageCircle,
+  FiMoreVertical,
+  FiTrash,
+} from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import usePostStore from "../../store/postStore";
 import CreatePost from "./CreatePost";
 import axios from "axios";
+import useLikeStore from "../../store/likeStore";
 
 const PostCard = ({ post }) => {
   const { user } = useAuthStore();
   const { deletePost } = usePostStore();
+  const { toggleLike } = useLikeStore();
 
   const menuRef = useRef(null);
 
@@ -20,6 +29,8 @@ const PostCard = ({ post }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showUpdatePost, setShowUpdatePost] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [isLiked, setIsLiked] = useState(post?.liked);
+  const [likeCount, setLikeCount] = useState(post?.likeCount);
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
@@ -30,6 +41,17 @@ const PostCard = ({ post }) => {
       } finally {
         setShowMenu(false);
       }
+    }
+  };
+
+  const handleLike = async () => {
+    try {
+      const response = await toggleLike(post.id);
+
+      setIsLiked(response.isLiked);
+      setLikeCount(response.likeCount);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -134,6 +156,38 @@ const PostCard = ({ post }) => {
             />
           </div>
         )}
+
+        <div className="px-4 pt-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                className={`flex items-center space-x-1 transition-all duration-200 ${
+                  isLiked
+                    ? "text-red-500"
+                    : "text-gray-700/50 hover:text-red-500"
+                }`}
+                onClick={handleLike}
+              >
+                <FiHeart
+                  size={20}
+                  className={`transition-all duration-200 ${
+                    isLiked && "fill-current"
+                  }`}
+                />
+                <span className="text-sm font-medium">{likeCount}</span>
+              </button>
+
+              <button className="flex items-center space-x-1 transition-colors text-gray-700 hover:text-blue-500">
+                <FiMessageCircle size={20} />
+                <span className="text-sm font-medium">000</span>
+              </button>
+            </div>
+
+            <button className="transition-all duration-200 text-gray-700 hover:text-gray-900">
+              <FiBookmark size={20} className="fill-current" />
+            </button>
+          </div>
+        </div>
 
         <div className="px-4 pb-2 pt-3">
           <p className="text-sm whitespace-pre-wrap break-words">

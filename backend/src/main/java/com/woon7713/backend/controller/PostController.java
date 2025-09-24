@@ -2,6 +2,8 @@ package com.woon7713.backend.controller;
 
 import com.woon7713.backend.dto.PostRequest;
 import com.woon7713.backend.dto.PostResponse;
+import com.woon7713.backend.entity.Like;
+import com.woon7713.backend.service.LikeService;
 import com.woon7713.backend.service.PostService;
 import com.woon7713.backend.service.S3Service;
 import jakarta.validation.Valid;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class PostController {
     private final PostService postService;
     private final S3Service s3Service;
+    private final LikeService likeService;
 
     private static final int EXPIRATION_MINUTES = 60;
 
@@ -60,4 +63,16 @@ public class PostController {
         String imageUrl = s3Service.generatePresignedUrl(url, EXPIRATION_MINUTES);
         return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
     }
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<?> toggleLike(@PathVariable Long postId) {
+        boolean isLiked = likeService.toggleLike(postId);
+        Long likeCount = likeService.getLikeCount(postId);
+
+        return ResponseEntity.ok().body(Map.of(
+                "isLiked", isLiked,
+                "likeCount", likeCount
+        ));
+    }
+
 }
