@@ -1,10 +1,12 @@
 import { FiArrowLeft, FiBookmark, FiGrid, FiLock } from "react-icons/fi";
 import Avatar from "../components/common/Avatar";
 import useFollowStore from "../store/followStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import useUserStore from "../store/userStore";
 import useAuthStore from "../store/authStore";
+import usePostStore from "../store/postStore";
+import PostList from "../components/post/PostList";
 
 const Profile = () => {
   const { username } = useParams();
@@ -12,6 +14,8 @@ const Profile = () => {
   const { followStatus, getFollowStatus, toggleFollow } = useFollowStore();
   const { userProfile, getUserProfile } = useUserStore();
   const { user: currentUser } = useAuthStore();
+  const { userPosts, userPostCount, getUserPosts, getUserPostCount } =
+    usePostStore();
 
   const isOwnProfile = currentUser?.username === userProfile?.username;
 
@@ -49,7 +53,30 @@ const Profile = () => {
     loadFollowStatus();
   }, [userProfile, getFollowStatus]);
 
-  useEffect(() => console.log(followStatus), [followStatus]);
+  useEffect(() => {
+    const loadPosts = async () => {
+      if (!userProfile) return;
+
+      getUserPosts(0, userProfile.id);
+    };
+
+    loadPosts();
+  }, [userProfile, getUserPosts]);
+
+  useEffect(() => {
+    const loadUserPostCount = async () => {
+      try {
+        if (!userProfile) return;
+
+        await getUserPostCount(userProfile.id);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadUserPostCount();
+  }, [userProfile, getUserPostCount]);
+
+  useEffect(() => console.log(userPostCount), [userPostCount]);
 
   return (
     <div className="bg-gray-50">
@@ -101,7 +128,7 @@ const Profile = () => {
 
         <div className="flex justify-around mt-6 pt-4">
           <div className="text-center">
-            <p className="font-semibold">000</p>
+            <p className="font-semibold">{userPostCount || 0}</p>
             <p className="text-gray-500 text-sm">posts</p>
           </div>
           <button className="text-center hover:opacity-70 transition-opacity cursor-pointer">
@@ -126,6 +153,7 @@ const Profile = () => {
         </div>
 
         <div className="p-4">
+          <PostList posts={userPosts} />
           <div>
             <div className="text-center py-12">
               <FiLock size={40} className="mx-auto mb-2 text-gray-400" />
