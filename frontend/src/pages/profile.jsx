@@ -114,9 +114,12 @@ const Profile = () => {
                   {userProfile?.username}
                 </h2>
                 {isOwnProfile ? (
-                  <button className="px-4 py-1 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50">
+                  <Link
+                    className="px-4 py-1 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50"
+                    to="/edit-profile"
+                  >
                     Edit Profile
-                  </button>
+                  </Link>
                 ) : (
                   <FollowButton user={userProfile} />
                 )}
